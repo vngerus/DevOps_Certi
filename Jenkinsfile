@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running Docker containers using Docker Compose'
-                    sh 'docker-compose -f $COMPOSE_FILE up -d'  // Usamos -d para ejecutar en segundo plano
+                    sh 'docker-compose -f $COMPOSE_FILE up -d'  // -d para ejecutarlo en segundo plano
                 }
             }
         }
@@ -36,8 +36,8 @@ pipeline {
             steps {
                 script {
                     echo 'Running tests on Docker containers'
-                    // Aquí puedes agregar pruebas específicas si es necesario
-                    sh 'docker-compose exec app curl http://localhost:8081' // Ajusta el nombre del servicio si es necesario
+                    // Pruebas para verificar que el servicio está funcionando
+                    sh 'docker-compose exec app curl http://localhost:8081' // Cambia si el servicio tiene otro nombre o puerto
                 }
             }
         }
