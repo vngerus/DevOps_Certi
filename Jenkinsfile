@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'myapp'
         IMAGE_TAG = 'latest'
-        COMPOSE_FILE = 'docker-compose.yml'
+        COMPOSE_FILE = 'docker-compose.yml'  // Asegúrate de que esta variable de entorno esté configurada correctamente
     }
 
     stages {
@@ -18,7 +18,8 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker images with Docker Compose'
-                    sh 'docker-compose -f $COMPOSE_FILE build'
+                    // Aquí se usa la ruta literal para evitar posibles problemas con la expansión de la variable
+                    sh 'docker-compose -f docker-compose.yml build'
                 }
             }
         }
@@ -27,7 +28,8 @@ pipeline {
             steps {
                 script {
                     echo 'Running Docker containers using Docker Compose'
-                    sh 'docker-compose -f $COMPOSE_FILE up -d'
+                    // Asegúrate de que el archivo docker-compose.yml esté bien configurado
+                    sh 'docker-compose -f docker-compose.yml up -d'
                 }
             }
         }
@@ -36,6 +38,7 @@ pipeline {
             steps {
                 script {
                     echo 'Checking logs of the Docker container'
+                    // Comando para ver los últimos 100 logs
                     sh 'docker-compose logs --tail=100 app'
                 }
             }
@@ -45,6 +48,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running tests on Docker containers'
+                    // Aquí puedes verificar el estado de los contenedores si tienen el puerto 8081 expuesto
                     sh 'docker-compose exec app curl http://localhost:8081'
                 }
             }
@@ -55,7 +59,8 @@ pipeline {
         always {
             script {
                 echo 'Cleaning up Docker containers'
-                sh 'docker-compose -f $COMPOSE_FILE down'
+                // Aquí detenemos los contenedores y limpiamos los recursos
+                sh 'docker-compose -f docker-compose.yml down'
             }
         }
     }
