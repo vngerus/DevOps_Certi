@@ -1,46 +1,51 @@
 pipeline {
-    agent any  // Esto indica que Jenkins puede ejecutar este pipeline en cualquier agente disponible
+    agent any 
 
     environment {
+        // Variables de entorno para los servicios y el nombre de la imagen
         IMAGE_NAME = 'myapp'
         IMAGE_TAG = 'latest'
+        COMPOSE_FILE = 'docker-compose.yml'  // Asegúrate de tener el archivo docker-compose.yml
     }
 
     stages {
-        stage('Build Docker Image') {
+        // Etapa para construir los servicios definidos en docker-compose.yml
+        stage('Build Docker Images') {
             steps {
                 script {
-                    echo "Building Docker image ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                    echo "Building Docker images with Docker Compose"
+                    sh 'docker-compose -f $COMPOSE_FILE build'
                 }
             }
         }
 
-        stage('Run Docker Container') {
+        // Etapa para iniciar los contenedores con docker-compose
+        stage('Run Docker Containers') {
             steps {
                 script {
-                    echo "Running Docker container ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh 'docker run -d -p 8081:8081 --name myapp-container ${IMAGE_NAME}:${IMAGE_TAG}'
+                    echo "Running Docker containers using Docker Compose"
+                    sh 'docker-compose -f $COMPOSE_FILE up -d'  // Inicia los contenedores en segundo plano
                 }
             }
         }
 
-        stage('Test Docker Container') {
+        // Etapa para realizar pruebas en los contenedores (opcional)
+        stage('Test Docker Containers') {
             steps {
                 script {
                     echo "Running tests on Docker container"
-                    sh 'curl --fail http://localhost:8081 || exit 1'
+                    sh 'docker-compose -f $COMPOSE_FILE exec myapp-container curl http://localhost:8081' // O lo que necesites
                 }
             }
         }
     }
 
     post {
+        // Etapa de limpieza para detener y eliminar los contenedores
         always {
             script {
-                echo "Cleaning up Docker container"
-                sh 'docker stop myapp-container || true'
-                sh 'docker rm myapp-container || true'
+                echo "Cleaning up Docker containers"
+                sh 'docker-compose -f $COMPOSE_FILE down'  // Detiene y elimina los contenedores y redes
             }
         }
     }
