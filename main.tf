@@ -8,15 +8,16 @@ terraform {
 }
 
 provider "docker" {
-  host = "npipe:////./pipe/docker_engine" # Usa npipe en Windows
+  host = "npipe:////./pipe/docker_engine"  # Conexión a Docker en Windows a través de npipe
 }
 
 resource "docker_image" "my_app_image" {
   name = "myapp:latest"
   build {
-    path      = "."          # Asegúrate de que el contexto esté apuntando al directorio correcto
-    dockerfile = "Dockerfile" # Nombre del archivo Dockerfile
-    remove     = true         # Eliminar imágenes intermedias
+    dockerfile = "Dockerfile"
+    path       = "/mnt/c/Archivos/Proyectos/DevOps/myapp"  # Ruta correcta en WSL 2
+    remove     = true
+    tag        = []
   }
 }
 
