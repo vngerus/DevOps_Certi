@@ -23,15 +23,6 @@ pipeline {
             }
         }
 
-        stage('Verify Curl in Container') {
-            steps {
-                script {
-                    echo 'Verifying curl installation in the Docker container'
-                    bat 'docker-compose exec app curl --version'
-                }
-            }
-        }
-
         stage('Run Docker Containers') {
             steps {
                 script {
@@ -41,11 +32,35 @@ pipeline {
             }
         }
 
+        stage('Verify Container Status') {
+            steps {
+                script {
+                    echo 'Checking if container is running...'
+                    bat 'docker-compose ps'
+                }
+            }
+        }
+
+        stage('Wait for Container to Start') {
+            steps {
+                script {
+                    bat '''
+                        echo Waiting for container to start...
+                        for /l %%x in (1, 1, 10) do (
+                            docker-compose ps | findstr "app" && exit /b 0
+                            timeout /t 2
+                        )
+                        exit /b 1
+                    '''
+                }
+            }
+        }
+
         stage('Check Logs') {
             steps {
                 script {
                     echo 'Checking logs of the Docker container'
-                    bat 'docker-compose logs --tail=100 app'
+                    bat 'docker-compose logs app'
                 }
             }
         }
