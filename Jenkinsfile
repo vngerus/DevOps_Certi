@@ -14,7 +14,7 @@ pipeline {
                 script {
                     // Construir la imagen Docker
                     echo "Building Docker image ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'  // Asegúrate de que tu Dockerfile esté en el directorio actual
                 }
             }
         }
@@ -25,6 +25,7 @@ pipeline {
                 script {
                     // Ejecutar el contenedor
                     echo "Running Docker container ${IMAGE_NAME}:${IMAGE_TAG}"
+                    // Exponemos el puerto 8081 del contenedor al puerto 8081 de la máquina host
                     sh 'docker run -d -p 8081:8081 --name myapp-container ${IMAGE_NAME}:${IMAGE_TAG}'
                 }
             }
@@ -36,7 +37,8 @@ pipeline {
                 script {
                     // Aquí podrías agregar pruebas para verificar que el contenedor está funcionando
                     echo "Running tests on Docker container"
-                    sh 'curl http://localhost:8081' // Realizar una solicitud al contenedor
+                    // Realizar una solicitud al contenedor
+                    sh 'curl --fail http://localhost:8081 || exit 1'  // Si el contenedor no responde, fallará el pipeline
                 }
             }
         }
@@ -47,8 +49,9 @@ pipeline {
         always {
             script {
                 echo "Cleaning up Docker container"
-                sh 'docker stop myapp-container || true'
-                sh 'docker rm myapp-container || true'
+                // Detener y eliminar el contenedor, si existe
+                sh 'docker stop myapp-container || true'  // Si no existe el contenedor, no fallará
+                sh 'docker rm myapp-container || true'    // Igualmente, si no existe, no fallará
             }
         }
     }
