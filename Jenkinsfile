@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent any  // Esto indica que Jenkins puede ejecutar este pipeline en cualquier agente disponible
 
     environment {
         IMAGE_NAME = 'myapp'
