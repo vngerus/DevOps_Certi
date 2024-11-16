@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running Docker containers using Docker Compose'
-                    sh 'docker-compose -f $COMPOSE_FILE up -d'  // Sin 'nohup', ejecuta en segundo plano con -d
+                    sh 'docker-compose -f $COMPOSE_FILE up -d'
                 }
             }
         }
@@ -36,18 +36,18 @@ pipeline {
             steps {
                 script {
                     echo 'Running tests on Docker containers'
-                    // Aquí el comando ejecuta curl dentro del contenedor
-                    sh 'docker-compose exec app curl http://localhost:8081'  // Ajusta si es necesario
+                    sh 'docker-compose exec app curl http://localhost:8081'
                 }
             }
         }
     }
 
-post {
-    always {
-        script {
-            echo 'Cleaning up Docker containers'
-            sh 'docker-compose -f $COMPOSE_FILE down'
+    post {
+        always {
+            script {
+                echo 'Cleaning up Docker containers'
+                sh 'docker-compose -f $COMPOSE_FILE down'
+            }
         }
     }
 }
