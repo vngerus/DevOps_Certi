@@ -18,7 +18,16 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker images with Docker Compose'
-                    bat 'docker-compose -f %COMPOSE_FILE% build'
+                    bat 'docker-compose -f %COMPOSE_FILE% build --no-cache'
+                }
+            }
+        }
+
+        stage('Verify Curl in Container') {
+            steps {
+                script {
+                    echo 'Verifying curl installation in the Docker container'
+                    bat 'docker-compose exec app curl --version'
                 }
             }
         }
