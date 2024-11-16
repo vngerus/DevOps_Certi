@@ -43,12 +43,11 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            script {
-                echo 'Cleaning up Docker containers'
-                sh 'docker-compose -f $COMPOSE_FILE down'
-            }
+post {
+    always {
+        script {
+            echo 'Cleaning up Docker containers'
+            sh 'docker-compose -f $COMPOSE_FILE down'
         }
     }
 }
