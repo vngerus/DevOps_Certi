@@ -18,8 +18,8 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker images with Docker Compose'
-                    // Usamos Docker Compose para construir las imágenes
-                    sh 'docker-compose -f $COMPOSE_FILE build'
+                    // Usar PowerShell para ejecutar docker-compose
+                    powershell 'docker-compose -f $env.COMPOSE_FILE up --build -d'
                 }
             }
         }
@@ -28,8 +28,8 @@ pipeline {
             steps {
                 script {
                     echo 'Running Docker containers using Docker Compose'
-                    // Ejecutar los contenedores en segundo plano con -d
-                    sh 'docker-compose -f $COMPOSE_FILE up -d'
+                    // Usar PowerShell para ejecutar docker-compose
+                    powershell 'docker-compose -f $env.COMPOSE_FILE up -d'
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
                 script {
                     echo 'Running tests on Docker containers'
                     // Ejecutar pruebas o comandos dentro de los contenedores
-                    sh 'docker-compose exec myapp-container curl http://localhost:8081' // Ajusta el contenedor y puerto
+                    powershell 'docker-compose exec myapp-container curl http://localhost:8081' // Ajusta el contenedor y puerto
                 }
             }
         }
@@ -49,8 +49,7 @@ pipeline {
         always {
             script {
                 echo 'Cleaning up Docker containers'
-                // Apagar y limpiar los contenedores después de la ejecución
-                sh 'docker-compose -f $COMPOSE_FILE down'
+                powershell 'docker-compose -f $env.COMPOSE_FILE down'
             }
         }
     }
