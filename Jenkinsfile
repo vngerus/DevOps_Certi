@@ -5,12 +5,25 @@ pipeline {
         IMAGE_NAME = 'myapp'
         IMAGE_TAG = 'latest'
         COMPOSE_FILE = 'docker-compose.yml'
+        DOCKER_BUILDKIT = '0' // Deshabilitar BuildKit
     }
 
     stages {
         stage('Checkout SCM') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Clean Docker Environment') {
+            steps {
+                script {
+                    echo 'Cleaning Docker environment'
+                    bat '''
+                        docker-compose down --rmi all --volumes --remove-orphans
+                        docker system prune -a --volumes -f
+                    '''
+                }
             }
         }
 
@@ -28,30 +41,6 @@ pipeline {
                 script {
                     echo 'Running Docker containers using Docker Compose'
                     bat 'docker-compose -f %COMPOSE_FILE% up -d'
-                }
-            }
-        }
-
-        stage('Verify Container Status') {
-            steps {
-                script {
-                    echo 'Checking if container is running...'
-                    bat 'docker-compose ps'
-                }
-            }
-        }
-
-        stage('Wait for Container to Start') {
-            steps {
-                script {
-                    bat '''
-                        echo Waiting for container to start...
-                        for /l %%x in (1, 1, 10) do (
-                            docker-compose ps | findstr "app" && exit /b 0
-                            timeout /t 2
-                        )
-                        exit /b 1
-                    '''
                 }
             }
         }
