@@ -43,7 +43,7 @@ pipeline {
         IMAGE_NAME = 'myapp'
         IMAGE_TAG = 'latest'
         COMPOSE_FILE = 'docker-compose.yml'
-        DOCKER_BUILDKIT = '0' // Desactiva BuildKit por compatibilidad
+        DOCKER_BUILDKIT = '0'
     }
 
     stages {
